@@ -1,0 +1,184 @@
+---
+title: "A4_T2_Teague_Tran"
+author: "Teague Tran"
+date: "11/18/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(janitor)
+library(here)
+library(effsize)
+library(broom)
+library(ggbeeswarm)
+library(car)
+library(lubridate)
+library(kableExtra)
+
+#read in bonanza hares data
+bonanza_hares <- read.csv(here("data","bonanza_hares.csv"))
+```
+
+## a) Introduction
+A 4 - 5 sentence "mini-introduction" to what this study is exploring, including basic background information about the subject, site and study (with citations as needed), and a brief overview of what is included in the exploratory report. You should probably do this last.
+
+
+## b) Data and analyses: 
+A 3 - 4 sentence section in which you briefly describe the data, including citation & credit as needed, and provide an overview of the main analysis, statistical methods and tools used.
+
+## c) Exploratory findings:
+
+
+```{r}
+#i) Annual juvenile hare trap counts
+#include month, and year column
+bonanza_hares <- bonanza_hares  %>%
+  mutate(date_new = mdy(date)) %>% 
+  mutate(year_new = year(date_new)) %>% 
+  mutate(month_new = month(date_new))
+# count total number of juvenile hair trappings each year
+juvtrap <- bonanza_hares %>% 
+  filter(age == "j") %>% 
+  group_by(year_new) %>% 
+  count(year_new)
+```
+
+```{r}
+#i) Visualize the amount of trapped juveniles per year
+ggplot(data = juvtrap, aes(x = year_new, y = n)) +
+  geom_col() + 
+  labs(x = "Year", y = "Annual juvenile hare trap counts", title = "Annual juvenile hare trap counts per year")
+```
+
+```{r, include = FALSE}
+#part of i)
+#summarize the data: min/max, mean, median
+summary_juvtrap <- 
+  summary(juvtrap, n)
+summary_juvtrap
+```
+
+
+```{r}
+#ii)
+
+```
+
+
+Figure 1. Number of annual juvenile snowshoe hare trapped around Bonanza Creek, Alaska is shown. The maximum count of hares was in 1999, where 126 was caught; while the minimum count was 2, in 2010. However, mean count was 31.5 and median count was 18.5. Total snowhare count is decreasing across time but this can be due to study effort (e.g. number of days and traps). Number and times of trappings should be uniform to make the data more consistent. 
+
+```{r}
+#iii) Juvenile weight comparison
+#Select out age and sex; get summary statistics (mean, sd, n ) to prepare for table
+juv_weight_table <-bonanza_hares %>% 
+  filter(age == "j", 
+         sex == "m"|
+         sex == "f") %>% 
+  select(sex,weight) %>% 
+  group_by(sex) %>% 
+  summarize(
+    mean_weight = round(mean(weight, na.rm = TRUE), 2),
+    sd_weight = round(sd(weight, na.rm = TRUE), 2),
+    n = n()
+  )
+```
+```{r, include= FALSE}
+
+#Doing statistical analyses on the data 
+#filtered by sex and age; selected sex and weight, grouped by sex (usefull for graphing)
+juv_weight_sex <-bonanza_hares %>% 
+  filter(age == "j", 
+         sex == "m"|
+         sex == "f") %>% 
+  select(sex,weight) %>% 
+  group_by(sex)
+
+#histogram shows normality (normality required before doing t-test)
+ggplot(data = juv_weight_sex, aes(x = weight)) +
+  geom_histogram() + 
+  facet_wrap(~sex)
+#exploratory graphs(QQ plot) Shows enough linearity to assume normality in data
+ggplot(data = juv_weight_sex, aes(sample = weight)) +
+  geom_qq() +
+  facet_wrap(~sex)
+
+#juvenile weight of males
+juv_weight_male <-bonanza_hares %>% 
+  filter(!is.na(weight)) %>% 
+  filter(age == "j", 
+         sex == "m") %>% 
+  select(sex,weight) %>% 
+  pull(weight)
+
+#juvenile weight in females
+juv_weight_female <-bonanza_hares %>% 
+  filter(!is.na(weight)) %>% 
+  filter(age == "j", 
+         sex == "f") %>% 
+  select(sex,weight) %>% 
+  pull(weight)
+
+#actual mean difference 
+abs(mean(juv_weight_male) - mean(juv_weight_female))
+
+#t-test to see if male and female weight are significantly different
+juv_weight_ttest <- t.test(juv_weight_male, juv_weight_female)
+juv_weight_ttest
+
+#Cohen's d test to find effect size
+cohen.d(juv_weight_female, juv_weight_male)
+
+```
+Table 1. t-tests on the data show that the mean weights between sexes are significantly different (p = .00709). However, the effect size is considered "small" by the Cohen's d test (d estimate = -0.2904). This means that although the actual difference in mean weight (~90.5 g) is significantly different between juvenile male and female snowshoe hares, that difference is still considered small.
+```{r}
+#part of iii)
+#create table of male and female hare length; include summary statistics
+juv_weight_table %>% 
+  kable(col.names = c("Sex", "Mean Weight (g)", "Standard deviation (g)", "Sample size")) %>% 
+  kable_styling(bootstrap_options = "striped", full_width = FALSE)
+```
+
+```{r}
+#iv) Relationship between juvenile weight & hind foot length
+juv_hindft_weight <- bonanza_hares %>% 
+  filter(age == "j") %>% 
+  select(hindft, weight)
+
+# Scatter plot to check for linear relationship
+
+ggplot(data = juv_hindft_weight, aes(x = weight, y = hindft)+
+  geom_point()
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
