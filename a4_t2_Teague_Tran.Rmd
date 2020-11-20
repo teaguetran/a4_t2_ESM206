@@ -287,7 +287,7 @@ ggplot(data = juv_hindft_weight, aes(x = weight, y = hindft))+
 ```
 ```{r, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE}
 # perform linear regression on data
-hindft_lm <- lm(weight ~ hindft, data = juv_hindft_weight)
+hindft_lm <- lm( hindft~weight , data = juv_hindft_weight)
 #display results of the linear regression in tidy format
 hindft_lm_tidy <- tidy(hindft_lm)
 # Call results of correlation in tidy format
