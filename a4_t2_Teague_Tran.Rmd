@@ -23,15 +23,17 @@ bonanza_hares <- read.csv(here("data","bonanza_hares.csv"))
 
 ## a) Introduction
 A 4 - 5 sentence "mini-introduction" to what this study is exploring, including basic background information about the subject, site and study (with citations as needed), and a brief overview of what is included in the exploratory report. You should probably do this last.
+Snowshoe hares (*lepus americanus*) are keystone species in northern boreal forests that have population fluctuations of 8-11 years. 
 
 
 ## b) Data and analyses: 
 A 3 - 4 sentence section in which you briefly describe the data, including citation & credit as needed, and provide an overview of the main analysis, statistical methods and tools used.
 
+In this study, we take data from [*Snowshoe hare physical data in Bonanza Creek Experimental Forest: 1999-Present*](https://portal.edirepository.org/nis/mapbrowse?packageid=knb-lter-bnz.55.22) (Kielland et al.) to analyze and visualize certain attributes of juvenile snowshoe hare population in Bonanza Creek, Alaska. We start by visualizing the annual count of juvenile hares trapped in the capture and release study, from 1999 to 2012. We then analyze the independent effects of sex and type of environment that that hares were trapped, using a t-test and ANOVA, and visualize the effects of both using a boxplot. 
 ## c) Exploratory findings:
 
 
-```{r}
+```{r, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE}
 #i) Annual juvenile hare trap counts
 #include month, and year column
 bonanza_hares <- bonanza_hares  %>%
@@ -45,17 +47,17 @@ juvtrap <- bonanza_hares %>%
   count(year_new)
 ```
 
-```{r}
+```{r, warning = FALSE, message = FALSE, echo = FALSE}
 #i) Visualize the amount of trapped juveniles per year
 ggplot(data = juvtrap, aes(x = year_new, y = n)) +
   geom_col() + 
   labs(x = "Year", y = "Annual juvenile hare trap counts", title = "Annual juvenile hare trap counts per year") +
-  scale_x_continuous(breaks = scales::pretty_breaks(n = 11))+
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10))+
   scale_y_continuous(breaks = scales::pretty_breaks(n = 9))
 ```
-Figure 1. Number of annual juvenile snowshoe hare trapped around Bonanza Creek, Alaska is shown. The maximum count of hares was in 1999, where 126 was caught; while the minimum count was 2, in 2010. However, mean count was 31.5 and median count was 18.5. Total snowhare count is decreasing across time but this can be due to study effort (e.g. number of days and traps). Number and times of trappings should be uniform to make the data more consistent. Data: Kielland et. al (2017)
+Figure 1. Number of annual juvenile snowshoe hare trapped around Bonanza Creek, Alaska is shown. The maximum count of hares was in 1999, where 126 was caught; while the minimum count was 2, in 2010. However, mean count was 31.5 and median count was 18.5. Total snowhare count is decreasing across time but this can be due to study effort (e.g. number of days and traps). Number and times of trappings should be uniform to make the data more consistent. Data: Kielland et al. 2017.
 
-```{r, include = FALSE}
+```{r, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE}
 #part of i)
 
 #summarize the data: min/max, mean, median
@@ -67,7 +69,12 @@ summary_juvtrap
 ```
 
 
-```{r, include = FALSE}
+
+
+
+
+
+```{r, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE}
 #ii) Visualize juvenile hare weights
 
 # mean of mass in juvenile hares 
@@ -81,14 +88,18 @@ juv_grid_means <-bonanza_hares %>%
 #include juveniles and group by sex and grid
 juv_weight_site <-bonanza_hares %>% 
   filter(age == "j") %>% 
-  group_by(sex,grid)
+  mutate(sex_new = case_when(
+    sex ==  "f" ~ "Female",
+    sex == "m" ~ "Male")) %>% 
+  filter(!is.na(sex_new)) %>% 
+  group_by(sex_new,grid)
 
 
 ```
 
-```{r, include = FALSE}
+```{r, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE}
 #ii) Visualize juvenile hare weights part 2
-#trying to do an anova on group by site
+#trying to do an anova on group by site (not required but seemed interesting to do)
 juv_grid <-bonanza_hares %>% 
   filter(!is.na(grid)) %>% 
   filter(!is.na(weight)) %>% 
@@ -107,9 +118,9 @@ summary(juv_grid_aov)
 TukeyHSD(juv_grid_aov)
 ```
 
-```{r, include = FALSE}
+```{r, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE}
 #ii) Visualize juvenile hare weights part 3
-#trying to do an t-tests on group by sex
+#trying to do an t-tests on group by sex (not required but seemed interesting to do)
 juv_sex <-bonanza_hares %>% 
   filter(!is.na(sex)) %>% 
   filter(!is.na(weight)) %>% 
@@ -139,28 +150,42 @@ juv_sex_ttest
 ```
 
 
-```{r, include = FALSE}
+```{r, warning = FALSE, message = FALSE, echo = FALSE}
 #Create figure that visualizes juvenile weights by sex and site
-ggplot(data = juv_weight_site, aes(x = sex, y = weight, fill = grid)) +
-  geom_boxplot(show.legend = FALSE) +
-  labs(y = "mean weight (g)", title = "Mean weight of snowshoe hares")+
+ggplot(data = juv_weight_site, aes(x = sex_new, y = weight)) +
+  geom_beeswarm(aes(color = grid))+
+  geom_boxplot(fill = NA, width = 0.4, outlier.color = NA) +
+  labs(y = "mean weight (g)", x = "sex", title = "Mean weight of snowshoe hares in Bonanza Creek")+
+  stat_summary(fun=mean, 
+               geom="point", 
+               shape=20, 
+               size=4, 
+               color="black", 
+               fill="black")+
   facet_wrap(~grid)+ 
-  theme_light()
-#rename sites
-juv_weight_site$grid[juv_weight_site$grid == "bonbs"] <- "Bonanza Black Spruce"
-juv_weight_site$grid[juv_weight_site$grid == "bonmat"] <- "Bonanza Mature"
-juv_weight_site$grid[juv_weight_site$grid == "bonrip"] <- "Bonanza Riparian"
+  theme_minimal()
+#rename sites to respective names
+juv_weight_site$grid[juv_weight_site$grid == "bonbs"] <- "Black Spruce"
+juv_weight_site$grid[juv_weight_site$grid == "bonmat"] <- "Mature"
+juv_weight_site$grid[juv_weight_site$grid == "bonrip"] <- "Riparian"
 
 # ii) done after figure caption
 ```
-Figure 2. Snowshoe hare was trapped in the following sites: Mature lowland black spruce stands (bonbs), mature assemblages of vegetation (bonmat), and riparian flood zones along the Tanana River (bonrip). Mean weight of snowshoe hares are similar along each site, except when comparing bonbs to bonrip (p = 0.0017256). Male and female weight are also significantly different (p = 0.007093). However, further analysis (two-way anova) needs to be performed to determine how the interaction between site and sex affects mean snowshoe hare size.
+**Figure 2.** Mean weight of male and female snowshoe hares at the three various sites are shown. Red (Black Spruce), green (mature) and blue (riparian) points indicate individual observations for hare weight (g) of either sex. Box endpoints indicate teh 25^th^ and 75^th^ percentile values; the black line and black point within the box indicate the median and mean value for each sex at that site, respectively. Data: Kielland et al.2017. 
+
+
+Additional Analysis: Mean weight of snowshoe hares are similar along each site, except when comparing Black Spruce areas to Riparian areas (p = 0.0017256). Male and female weight are also significantly different (p = 0.007093). However, further analysis (two-way anova) needs to be performed to determine if there is interaction between site and sex on mean snowshoe hare size.
 
 
 
 
-```{r}
+
+
+
+
+```{r, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE}
 #iii) Juvenile weight comparison
-#Select out age and sex; get summary statistics (mean, sd, n ) to prepare for table
+#Select out age and sex; get summary statistics (mean, sd, n ) to prepare for table; data will be used to create table (kable)
 juv_weight_table <-bonanza_hares %>% 
   mutate(sex_new = case_when(
     sex ==  "f" ~ "Female",
@@ -175,10 +200,11 @@ juv_weight_table <-bonanza_hares %>%
     sd_weight = round(sd(weight, na.rm = TRUE), 2),
     n = n())
 ```
-```{r, include= FALSE}
+```{r, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE}
 
 #Doing statistical analyses on the data 
-#filtered by sex and age; selected sex and weight, grouped by sex (usefull for graphing)
+
+#filtered by sex and age; selected sex and weight, grouped by sex (useful for exploratory graphing)
 juv_weight_sex <-bonanza_hares %>% 
   filter(age == "j", 
          sex == "m"|
@@ -187,7 +213,7 @@ juv_weight_sex <-bonanza_hares %>%
   group_by(sex)
 
 ```
-```{r, include = FALSE}
+```{r, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE}
 #Exploratory graphs
 #histogram shows normality (normality required before doing t-test)
 ggplot(data = juv_weight_sex, aes(x = weight)) +
@@ -198,7 +224,7 @@ ggplot(data = juv_weight_sex, aes(sample = weight)) +
   geom_qq() +
   facet_wrap(~sex)
 ```
-```{r, include = FALSE}
+```{r, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE}
 #Set up for a t-test and perform it
 
 #juvenile weight of males
@@ -229,8 +255,8 @@ cohen.d(juv_weight_female, juv_weight_male)
 ```
 
 
-Table 1. t-tests on the data show that the mean weights between sexes are significantly different (p = .00709). However, the effect size is considered "small" by the Cohen's d test (d estimate = -0.2904). This means that although the actual difference in mean weight (~90.5 g) is significantly different between juvenile male and female snowshoe hares, that difference is still considered small.
-```{r}
+Table 1. t-tests on the data show that the mean weights between sexes are significantly different (p = .00709). However, the effect size is considered "small" by the Cohen's d test (d estimate = -0.2904). This means that although the actual difference in mean weight (~90.5 g) is significantly different between juvenile male and female snowshoe hares, that difference is still considered small. Data: Kielland et al. 2017. 
+```{r, warning = FALSE, message = FALSE, echo = FALSE}
 #part of iii)
 #create table of male and female hare length; include summary statistics
 juv_weight_table %>% 
@@ -240,7 +266,13 @@ juv_weight_table %>%
 # iii) done
 ```
 
-```{r}
+
+
+
+
+
+
+```{r, warning = FALSE, message = FALSE, echo = FALSE, include=FALSE}
 #iv) Relationship between juvenile weight & hind foot length
 juv_hindft_weight <- bonanza_hares %>% 
   filter(age == "j") %>%  
@@ -248,31 +280,42 @@ juv_hindft_weight <- bonanza_hares %>%
   filter(!is.na(weight))%>% 
   select(hindft, weight, age)
 
-# Scatter plot to check for linear relationship
+```
 
+```{r, warning = FALSE, message = FALSE, echo = FALSE}
+#Scatterplot to visualize comparison between hindft (y) and weight (x)
 ggplot(data = juv_hindft_weight, aes(x = weight, y = hindft))+
   geom_point()+
   geom_smooth(method = "lm")+
   labs(x = "weight (g)", y ="hind foot length (mm)" ) +
   theme_minimal()
-
 ```
+
+
 ```{r, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE}
 #Run linear regression on data
-hindfoot_linreg <- lm(weight ~ hindft, data = juv_hindft_weight)
+hindft_lm <- lm(weight ~ hindft, data = juv_hindft_weight)
 
+# get tidy versions of model output to call later in text
+hindft_lm_tidy <- tidy(hindfoot_lm)
+hindft_lm_glance <- glance(hindfoot_lm)
 #Call linear regression results
-(summary(hindfoot_linreg))
+(summary(hindfoot_lm))
+#use plot function to check for assumptions (homoscedastic?, )
+plot(hindfoot_lm)
 ```
 ```{r, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE}
 #Correlation test with data
 hindft_ct <- cor.test(juv_hindft_weight$hindft, juv_hindft_weight$weight)
+#tidy up correlation (call on later in text)
+hindft_ct_tidy <- tidy(hindft_ct)
 # Call results of correlation
-hindft_ct
+hindft_ct_tidy
+
 ```
+**Figure 3.** Relationship between hindfoot length (mm) and weight (g) for juvenile snowshoe hares. Each point indicates a single hare observation. Linear model summary: $\beta$~1~ = 9.52 mm g^-1^, p < .001, R^2^ = 0.3, Pearson's *r* = .55). Data: Kielland et al.2017.
 
-
-
+The relationship between hindfoot length (mm) and body weight (g) does not appear to be linear. Simple linear regression shows that there is a significant relationship between hindfoot length and body mass (p < .001, R^2^ = .30) with an average slope of $\beta$~1~ = 9.52 mm g^-1^ (for every gram increase, we expect an average increase of hindfoot length of 9.52mm). There is also a significant, moderate correlation between the two variables (Pearson's *r* = .55, p < .001). Diagnostic plots (not included) reveal that the data might not be normally distributed and have homoscedastic residuals, indicating a potential non-linear relationship between the two variables.
 
 
 
