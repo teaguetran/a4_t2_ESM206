@@ -87,7 +87,11 @@ juv_weight_site <-bonanza_hares %>%
     sex ==  "f" ~ "Female",
     sex == "m" ~ "Male")) %>% 
   filter(!is.na(sex_new)) %>% 
-  group_by(sex_new,grid)
+  group_by(sex_new,grid) 
+  #rename sites to respective names (DOES NOT SHOW UP IN KNITTED DOCUMENT?!)
+juv_weight_site$grid[juv_weight_site$grid == "bonbs"] <- "Black Spruce"
+juv_weight_site$grid[juv_weight_site$grid == "bonmat"] <- "Mature"
+juv_weight_site$grid[juv_weight_site$grid == "bonrip"] <- "Riparian"
 ```
 
 ```{r, warning = FALSE, message = FALSE, echo = FALSE, include = FALSE}
@@ -157,10 +161,6 @@ ggplot(data = juv_weight_site, aes(x = sex_new, y = weight)) +
                fill="black")+
   facet_wrap(~grid)+ 
   theme_minimal()
-#rename sites to respective names
-juv_weight_site$grid[juv_weight_site$grid == "bonbs"] <- "Black Spruce"
-juv_weight_site$grid[juv_weight_site$grid == "bonmat"] <- "Mature"
-juv_weight_site$grid[juv_weight_site$grid == "bonrip"] <- "Riparian"
 
 # ii) done after figure caption
 ```
