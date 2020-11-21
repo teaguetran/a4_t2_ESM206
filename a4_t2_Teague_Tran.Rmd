@@ -307,8 +307,6 @@ hindft_ct_tidy
 ```
 **Figure 3.** Relationship between hindfoot length (mm) and weight (g) for juvenile snowshoe hares. Each point indicates a single hare observation. Linear model summary: $\beta$~1~ = .03 mm g^-1^, p < .001, R^2^ = 0.3, Pearson's *r* = .55). Data: Kielland et al.2017.
 
-The relationship between hindfoot length (mm) and body weight (g) does not appear to be linear. Simple linear regression shows that body mass does not predict the variance of hindfoot length well (p < .001, R^2^ = .30) with an average slope of $\beta$~1~ = .03 mm g^-1^ (for every gram increase, we expect an average increase of hindfoot length of .03 mm). However, there is a significant, positive, moderate correlation between the two variables (Pearson's *r* = .55, p < .001). Diagnostic plots (not included) reveal that the data might not be normally distributed and does not have homoscedastic residuals (is thus heteroscedastic), indicating a potential non-linear relationship between the two variables.
-
 ### d) Summary
 
 Additional Analysis: Mean weight of snowshoe hares are similar along each site, except when comparing Black Spruce areas to Riparian areas (p = 0.0017256). Male and female weight are also significantly different (p = 0.007093). However, further analysis (two-way ANOVA) needs to be performed to determine if there is interaction between site and sex on mean snowshoe hare size.
