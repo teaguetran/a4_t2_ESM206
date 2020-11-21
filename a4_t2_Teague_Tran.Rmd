@@ -28,7 +28,7 @@ Snowshoe hares (*Lepus americanus*) are keystone species in northern boreal fore
 
 ### b) Data and analyses: 
 
-In this study, data from [*Snowshoe hare physical data in Bonanza Creek Experimental Forest: 1999-Present*](https://portal.edirepository.org/nis/mapbrowse?packageid=knb-lter-bnz.55.22) (Kielland et al. 2017) was used to analyze and visualize certain attributes of juvenile snowshoe hare population in Bonanza Creek, Alaska. The data contains observations for 3,197 observations for each snowshoe hare trapped in the mark and recapture study over a 14 year period (1999-2012). Data visualization consisted of histograms comparing juvenile capture rate per year, box/beeswarm plots to see the effects of sex and location, tables to see the effect of sex on weight, and scatterplots to visualize the relationship between hindfoot length and weight. Mean weight based on sex was analyzed using two-sample t-tests, using a significance level of (α) of .05 throughout, with differences between groups described by Cohen’s d effect size. An ANOVA was also performed to analyze the effect of location/site on weight. Finally, the relationship of juvenile hindfoot length and body weight was analyzed through linear regression and correlation.
+In this study, data from [*Snowshoe hare physical data in Bonanza Creek Experimental Forest: 1999-Present*](https://portal.edirepository.org/nis/mapbrowse?packageid=knb-lter-bnz.55.22) (Kielland et al. 2017) was used to analyze and visualize certain attributes of juvenile snowshoe hare population in Bonanza Creek, Alaska. The data contains observations for 3,197 observations for each snowshoe hare trapped in the mark and recapture study over a 14 year period (1999-2012). All samples were captured at a total of three environment types (will be called site): Black Spruce assemblages, diverse mature assemblages, and riparian areas. Data visualization consisted of histograms comparing juvenile capture rate per year, box/beeswarm plots to see the effects of sex and site, tables to see the effect of sex on weight, and scatterplots to visualize the relationship between hindfoot length and weight. Mean weight based on sex was analyzed using two-sample t-tests, using a significance level of (α) of .05 throughout, with differences between groups described by Cohen’s d effect size. An ANOVA was also performed to analyze the effect of site on weight. Finally, the relationship of juvenile hindfoot length and body weight was analyzed through linear regression and correlation.
 
 ### c) Exploratory findings:
 
@@ -169,7 +169,7 @@ ggplot(data = juv_weight_site, aes(x = sex_new, y = weight)) +
 **Figure 2.** Mean weight of male and female snowshoe hares at the three various sites are shown. Red (Black Spruce), green (mature) and blue (riparian) points indicate individual observations for hare weight (g) of either sex. Box endpoints indicate teh 25^th^ and 75^th^ percentile values; the black line and black point within the box indicate the median and mean value for each sex at that site, respectively. Data: Kielland et al.2017. 
 
 
-Additional Analysis: Mean weight of snowshoe hares are similar along each site, except when comparing Black Spruce areas to Riparian areas (p = 0.0017256). Further analysis (two-way anova) needs to be performed to determine if there is interaction between site and sex on mean snowshoe hare size.
+Additional Analysis: Mean weight of snowshoe hares are similar along each site, except when comparing Black Spruce areas to Riparian areas (TukeyHSD; p = 0.0017256). Further analysis (two-way anova) needs to be performed to determine if there is interaction between site and sex on mean snowshoe hare size.
 
 
 
@@ -250,7 +250,7 @@ cohen.d(juv_weight_female, juv_weight_male)
 ```
 
 
-**Table 1**. t-tests on the data show that the mean weights between sexes are significantly different (p = .00709). However, the effect size is considered "small" by the Cohen's d test (d estimate = -0.2904). This means that although the actual difference in mean weight (~90.5 g) is significantly different between juvenile male and female snowshoe hares, that difference is still considered small. Data: Kielland et al. 2017. 
+**Table 1**. t-tests on the data show that the mean weights between female and male (855.39 $\pm$ 292.25 and 945.86 $\pm$ 333.22 g respectively; mean $\pm$ 1 standard deviation ) are significantly different (Welch's two-sample ttest t(325) = 2.71; p = .00709). However, the effect size is considered "small" (Cohen's *d* = -0.2904). This means that although the actual difference in mean weight (~90.5 g; 10.5% difference) is significantly different between juvenile female and male snowshoe hares, that difference is still considered small. Data: Kielland et al. 2017. 
 ```{r, warning = FALSE, message = FALSE, echo = FALSE}
 #part of iii)
 #create table of male and female hare length; include summary statistics
@@ -320,6 +320,11 @@ Exploratory data analysis reveals the following initial findings:
 - There is a significant difference in mean weight of juvenile snowshoe hares when comparing Black Spruce sites to Riparian sites. 
 - Male and female juvenile snowshoe hare weights are significantly different. However, the effect size is small.
 - There is a moderately positive correlation between hindfoot length and weight
+
+Next steps: 
+
+- Perform a two-way ANOVA for the effect of sex and site on juvenile snowshoe hare weight.
+- Analyze the mean hindfoot length at each site type (ANOVA)
 
 ### e) Citations 
 
